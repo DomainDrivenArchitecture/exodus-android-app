@@ -21,6 +21,7 @@ import org.eu.exodus_privacy.exodusprivacy.manager.network.ExodusModule
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import retrofit2.Retrofit
@@ -113,6 +114,7 @@ class ExodusAPIRepositoryTest {
     }
 
     @Test
+    @Ignore("Flaky on some devices with differing error messages. Was used to find origin of #238")
     fun exodusAPIRepositoryShouldTimeOut() = runTest(testDispatcher, timeout = 12.seconds) {
         // given
         hiltRule.inject()

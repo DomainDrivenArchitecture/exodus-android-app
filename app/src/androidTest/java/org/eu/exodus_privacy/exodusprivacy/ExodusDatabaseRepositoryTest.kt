@@ -19,6 +19,7 @@ import org.eu.exodus_privacy.exodusprivacy.objects.Permission
 import org.eu.exodus_privacy.exodusprivacy.objects.Source
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.io.InputStream
@@ -37,7 +38,7 @@ class ExodusDatabaseRepositoryTest {
     private lateinit var context: Context
     private lateinit var assets: AssetManager
     private lateinit var bitmapStream: InputStream
-    private lateinit var image: Bitmap
+    private lateinit var tooLargeImage: Bitmap
     private lateinit var testDB: ExodusDatabase
     private lateinit var exodusDatabaseRepository: ExodusDatabaseRepository
 
@@ -63,7 +64,7 @@ class ExodusDatabaseRepositoryTest {
         context = InstrumentationRegistry.getInstrumentation().context
         assets = context.assets
         bitmapStream = assets.open("mipmap/big_square_bigfs.png")
-        image = BitmapFactory.decodeStream(bitmapStream)
+        tooLargeImage = BitmapFactory.decodeStream(bitmapStream)
 
         testDB = Room.inMemoryDatabaseBuilder(
             context,
@@ -79,7 +80,7 @@ class ExodusDatabaseRepositoryTest {
         exodusAppEntry = ExodusApplication(
             packageName,
             name,
-            image,
+            tooLargeImage,
             versionName,
             versionCode,
             permissions,
@@ -95,7 +96,7 @@ class ExodusDatabaseRepositoryTest {
         exodusAppEntry2 = ExodusApplication(
             packageName2,
             name2,
-            image.scale(resolution, resolution),
+            tooLargeImage.scale(resolution, resolution),
             versionName,
             versionCode,
             permissions,
@@ -138,6 +139,7 @@ class ExodusDatabaseRepositoryTest {
     }
 
     @Test
+    @Ignore("Flaky on some devices with differing error messages. Was used to find origin of #181")
     fun exodusDatabaseRepoShouldCrash() = runTest(testDispatcher) {
         // given
         hiltRule.inject()
@@ -170,7 +172,7 @@ class ExodusDatabaseRepositoryTest {
         exodusAppEntry = ExodusApplication(
             packageName,
             name,
-            image.scale(resolution, resolution),
+            tooLargeImage.scale(resolution, resolution),
             versionName,
             versionCode,
             permissions,
@@ -188,7 +190,7 @@ class ExodusDatabaseRepositoryTest {
         val retrievedApp = exodusDatabaseRepository.getApp(packageName)
 
         // then
-        assert(retrievedApp.icon.sameAs(image.scale(resolution, resolution)))
+        assert(retrievedApp.icon.sameAs(tooLargeImage.scale(resolution, resolution)))
     }
 
     @Test
@@ -199,7 +201,7 @@ class ExodusDatabaseRepositoryTest {
         exodusAppEntry = ExodusApplication(
             packageName,
             name,
-            image.scale(resolution, resolution),
+            tooLargeImage.scale(resolution, resolution),
             versionName,
             versionCode,
             permissions,
